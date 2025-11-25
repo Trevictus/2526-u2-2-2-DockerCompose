@@ -1,0 +1,14 @@
+# Tarea 5.2: Comparación con la Práctica 2.1
+
+Crea una tabla comparativa entre la gestión manual (Práctica 2.1) y Docker Compose:
+
+| Aspecto | Gestión Manual (Docker CLI)                                                                                                     | Docker Compose                                                                                                  |
+| :--- |:--------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------|
+| **Creación de red** | Tienes que crearla tú mismo con `docker network create` antes de lanzar nada y acordarte de conectar cada contenedor.           | **Automática**. Se crea sola al levantar el proyecto y los contenedores se ven entre sí por su nombre.          |
+| **Despliegue** | Tienes que lanzar los comandos uno por uno y respetar el orden para que no falle.                                               | Con `docker compose up -d` se levanta todo en el orden correcto.                                                |
+| **Variables de entorno** | Muchas flags en el comando que lo hacen difícil de leer.                                                                        | Más limpio. Se leen directamente de un archivo `.env` o se definen ordenadas en el YAML.                  |
+| **Gestión de volúmenes** | Tienes que poner la flag `-v` cada vez que lanzas el contenedor. Si se te olvida o te equivocas de ruta, pierdes los datos.     | Se quedan definidos en el archivo de configuración, así que siempre se montan igual y no hay riesgo de olvidos. |
+| **Inicio / Detención** | Hay que ir parando o borrando los contenedores uno por uno (`docker stop ...`).                                                 | Paras, arrancas o borras todo el entorno de golpe (`stop`, `start`, `down`).                                    |
+| **Escalabilidad** | Si quieres más copias, tienes que lanzar comandos nuevos cambiando los puertos a mano para que no choquen.          | Solo añades el parámetro `--scale` y listo.                      |
+| **Reproducibilidad** | Es fácil equivocarse al escribir el comando de nuevo o que se te olvide un parámetro si no tienes un script guardado. | Como todo está escrito en código (IaC), el entorno se levanta idéntico en cualquier ordenador.       |
+| **Documentación** | Necesitas un README o una guía aparte que explique qué comandos lanzar.                                                         | El propio archivo `docker-compose.yml` sirve de documentación: con leerlo ya sabes cómo funciona todo.          |

@@ -1,0 +1,28 @@
+version: '3.8'  # Versión
+
+services:
+  # --- SERVICIO 1: La Aplicación ---
+  app:
+    image: iesgn/guestbook       # La imagen a descargar
+    container_name: guestbook_app # Nombre contenedor
+    ports:
+      - "5000:5000"              # Mapeo: Host : Puerto Contenedor
+    environment:
+      - REDIS_SERVER=db          # le decimos a la app dónde está la base de datos.
+                                 # "db" es el nombre del servicio definido abajo. Docker hace de DNS.
+    restart: always              # Si la app falla o reinicias Windows, el contenedor arranca solo.
+    depends_on:
+      - db                       # Le dice a Docker: "No inicies 'app' hasta que inicies 'db'"
+
+  # --- SERVICIO 2: Redis ---
+  db:
+    image: redis                 # Imagen oficial de Redis
+    container_name: guestbook_redis
+    command: redis-server --appendonly yes  # Comando para guardar en disco
+    volumes:
+      - redis_data:/data         # PERSISTENCIA
+    restart: always
+
+# --- DEFINICIÓN DE VOLUMEN ---
+volumes:
+  redis_data:                    # Aquí registramos el volumen
