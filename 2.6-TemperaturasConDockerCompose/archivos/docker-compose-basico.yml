@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: iesgn/temperaturas_frontend
+    restart: always
+    ports:
+      - "8081:3000"
+    environment:
+      # Nombre del servicio backend definido abajo
+      TEMP_SERVER: backend:5000
+    depends_on:
+      - backend
+
+  backend:
+    image: iesgn/temperaturas_backend
+    restart: always
+    # No exponemos puertos al host por seguridad

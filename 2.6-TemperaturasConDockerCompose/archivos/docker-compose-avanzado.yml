@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: iesgn/temperaturas_frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      TEMP_SERVER: ${BACKEND_HOST}:${BACKEND_PORT}
+    depends_on:
+      backend:
+        condition: service_healthy # Espera a que el backend esté SALUDABLE
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+
+  backend:
+    image: iesgn/temperaturas_backend
+    restart: always
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+    healthcheck:
+      # Usamos wget en lugar de curl por temas de compatibilidad.
+      # -q: quiet (sin salida), --spider: comprueba sin descargar
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:5000 || exit 1" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
