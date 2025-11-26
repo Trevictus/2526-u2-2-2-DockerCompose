@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  # Servicio principal: WordPress
+  wordpress:
+    image: wordpress:latest   # Uso la última imagen oficial de WordPress
+    ports:
+      - "${WP_PORT}:80"       # Expongo el puerto configurado en WP_PORT hacia el 80 interno del contenedor
+    environment:
+      WORDPRESS_DB_HOST: db:3306       # Indico que la base de datos está en el servicio 'db' en el puerto 3306
+      WORDPRESS_DB_USER: ${DB_USER}    # Usuario de la base de datos (variable de entorno)
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}  # Contraseña del usuario de la base de datos
+      WORDPRESS_DB_NAME: ${DB_NAME}    # Nombre de la base de datos
+    volumes:
+      - ./wordpress_files:/var/www/html/wp-content
+      # Montaje de volumen: guardo los archivos de wp-content en local
+      # Esto me permite persistir fuera del contenedor
+    depends_on:
+      - db   # WordPress depende de que la base de datos esté levantada primero
+    restart: always   # Reinicio automático en caso de fallo
+
+  # Servicio de base de datos: MariaDB
+  db:
+    image: mariadb:latest   # Uso la última imagen oficial de MariaDB
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}        # Nombre de la base de datos que se creará
+      MYSQL_USER: ${DB_USER}            # Usuario de la base de datos
+      MYSQL_PASSWORD: ${DB_PASSWORD}    # Contraseña del usuario
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}  # Contraseña del usuario root
+    volumes:
+      - ./mysql_files:/var/lib/mysql
+      # Persistencia de datos en mi máquina
+      # Así no se pierden al eliminar el contenedor
+    restart: always   # Reinicio automático en caso de fallo

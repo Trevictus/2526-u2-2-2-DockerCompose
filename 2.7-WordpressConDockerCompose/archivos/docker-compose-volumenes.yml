@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  # Servicio principal: WordPress
+  wordpress:
+    image: wordpress:latest   # Uso la última imagen oficial de WordPress
+    ports:
+      - "${WP_PORT}:80"       # Expongo el puerto configurado en WP_PORT hacia el 80 interno del contenedor
+    environment:
+      WORDPRESS_DB_HOST: db:3306       # Apunto al servicio 'db' en el puerto 3306
+      WORDPRESS_DB_USER: ${DB_USER}    # variable de entorno Usuario de la base de datos
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}  # variable de entorno Contraseña del usuario de la base de datos
+      WORDPRESS_DB_NAME: ${DB_NAME}    # variable de entorno de Nombre de la base de datos
+    volumes:
+      - wp_data:/var/www/html/wp-content
+      # Persistencia de datos
+    depends_on:
+      - db   # WordPress depende de que la base de datos esté levantada primero
+    restart: always   # Reinicio automático en caso de fallo
+
+  # Servicio de base de datos: MariaDB
+  db:
+    image: mariadb:latest   # Uso la última imagen oficial de MariaDB
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}        # Nombre de la base de datos
+      MYSQL_USER: ${DB_USER}            # Usuario de la base de datos
+      MYSQL_PASSWORD: ${DB_PASSWORD}    # Contraseña del usuario
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}  # Contraseña del root
+    volumes:
+      - db_data:/var/lib/mysql
+      # Persistencia de datos
+    restart: always   # Reinicio automático en caso de fallo
+
+# Volúmenes persistentes para datos de WordPress y MariaDB
+volumes:
+  wp_data:
+  db_data:
